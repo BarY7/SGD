@@ -80,8 +80,13 @@ def SGD_hinge(data, labels, C, eta_0, T):
     """
     Implements Hinge loss using SGD.
     """
-    # TODO: Implement me
-    pass
+    number_of_samples = len(data)
+    w = [0 for i in range(784)]
+    for t in range(1, T+1):
+        random_i = random_sample_from_i(number_of_samples)
+        xi, yi = data[random_i], labels[random_i]
+        w = SGD_hinge_step(w, eta_0, t, C, xi, yi)
+    return w
 
 
 def SGD_ce(data, labels, eta_0, T):
@@ -96,3 +101,18 @@ def SGD_ce(data, labels, eta_0, T):
 # Place for additional code
 
 #################################
+
+# does a single stop on before_w(wt) and returns
+# wt+1
+
+
+def random_sample_from_i(i):
+    return np.randint(0, i)
+
+
+def SGD_hinge_step(before_w, n0, t, C, xi, yi,):
+    nt = n0/t
+    after_w = (1-nt)*before_w  # init
+    if(yi*before_w*xi < 1):
+        after_w = after_w + nt*C*yi*xi
+    return after_w
