@@ -122,6 +122,16 @@ def SGD_hinge_step(before_w, n0, t, C, xi, yi,):
 
     return after_w
 
+def SGD_ce_step(before_w, n0, t, xi, yi,):
+    nt = n0
+    after_w = None
+    if(yi*np.inner(before_w, xi) < 1):
+        after_w = (1-nt)*before_w + nt*C*yi*xi
+    else:
+        after_w = np.multiply((1-nt), before_w)
+
+    return after_w
+
 
 def cross_validation(validation_data, validation_labels, predictor):
     worked = 0
@@ -196,7 +206,27 @@ def q1_c_d():
 
 
 def q2_a():
-    print(23)
+    T = 1000
+    C = 1
+    n0_candidates = np.array([pow(10, i)
+                              for i in range(-5, 6)], dtype=np.longfloat)
+    n0_emp_average = np.array([0 for i in range(-5, 6)], dtype=np.longfloat)
+    number_of_runs = 10
+    for i in range(number_of_runs):
+        train_data, train_labels, validation_data, validation_labels, test_data, test_labels = helper_ce()
+        for j in range(len(n0_candidates)):
+            predictor = SGD_ce(train_data, train_labels,
+                                  n0_candidates[j], T)
+            n0_emp_average[j] = n0_emp_average[j] + \
+                cross_validation(
+                    validation_data, validation_labels, predictor)/number_of_runs
+    print(n0_emp_average)
+    line, = plt.plot(n0_candidates, n0_emp_average, label="eta0 to accuracy")
+    plt.legend()
+    plt.xlim(pow(10, -5), 10**5)
+    plt.xscale('log')
+    plt.show()
+    return n0_candidates[n0_emp_average.argmin()]
 
 
 q1_b()
