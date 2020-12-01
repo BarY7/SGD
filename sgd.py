@@ -151,8 +151,10 @@ def q1_a():
                 cross_validation(
                     validation_data, validation_labels, predictor)/number_of_runs
     print(n0_emp_average)
-    plt.plot(n0_candidates, n0_emp_average)
-    plt.xlim(10**-5, 10**3)
+    line, = plt.plot(n0_candidates, n0_emp_average, label="eta0 to accuracy")
+    plt.legend()
+    plt.xlim(pow(10, -5), 10**5)
+    plt.xscale('log')
     plt.show()
     return n0_candidates[n0_emp_average.argmin()]
 
@@ -160,27 +162,32 @@ def q1_a():
 def q1_b():
     T = 1000
     n0 = 1
-    C_candidates = np.array([pow(10, -i) for i in range(-5, 5)])
-    C_emp_average = np.array([0 for i in range(-5, 5)])
+    C_candidates = np.array([pow(10, i) for i in range(-5, 5)])
+    C_emp_average = np.array([0 for i in range(-5, 5)], dtype=np.float64)
     number_of_runs = 10
     for i in range(number_of_runs):
+        train_data, train_labels, validation_data, validation_labels, test_data, test_labels = helper_hinge()
         for j in range(len(C_candidates)):
-            train_data, train_labels, validation_data, validation_labels, test_data, test_labels = helper_ce()
             predictor = SGD_hinge(train_data, train_labels,
                                   C_candidates[j], n0, T)
             C_emp_average[j] = C_emp_average[j] + \
                 cross_validation(
                     validation_data, validation_labels, predictor)/number_of_runs
     print(C_emp_average)
-    plt.plot(C_candidates, C_emp_average)
+    line, = plt.plot(C_candidates, C_emp_average,
+                     label="C candidates to accuracy")
+    plt.legend()
+    plt.xlim(pow(10, -5), 10**5)
+    plt.xscale('log')
+    plt.show()
     return C_candidates[C_emp_average.argmin()]
 
 
 def q1_c_d():
     T = 20000
-    n0 =1
+    n0 = 1
     C = 4
-    train_data, train_labels, validation_data, validation_labels, test_data, test_labels = helper_ce()
+    train_data, train_labels, validation_data, validation_labels, test_data, test_labels = helper_hinge()
     predictor = SGD_hinge(train_data, train_labels, C, n0, T)
     predictor_2d = np.reshape(predictor, (-1, 2))
     plt.imshow(predictor_2d)
@@ -188,4 +195,8 @@ def q1_c_d():
     print(accuracy)
 
 
-q1_a()
+def q2_a():
+    print(23)
+
+
+q1_b()
